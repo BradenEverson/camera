@@ -2,10 +2,10 @@ fn main() {
     let mut servo = MotorDriver::new(Channel::Pwm1);
 
     loop {
-        servo.set_angle(90f64);
-        thread::sleep(Duration::from_millis(5000));
+        servo.set_angle(85f64);
+        thread::sleep(Duration::from_millis(1000));
         servo.set_angle(0f64);
-        thread::sleep(Duration::from_millis(5000));
+        thread::sleep(Duration::from_millis(1000));
     }
 }
 

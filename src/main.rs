@@ -1,17 +1,29 @@
-fn main() {
-    let mut servo = MotorDriver::new(Channel::Pwm1);
-
-    loop {
-        servo.set_angle(85f64);
-        thread::sleep(Duration::from_millis(1000));
-        servo.set_angle(0f64);
-        thread::sleep(Duration::from_millis(1000));
-    }
-}
-
-use std::{thread, time::Duration};
+use std::time::Duration;
 
 use rppal::pwm::{Channel, Polarity, Pwm};
+use warp::Filter;
+
+async fn handler() {
+    let mut servo = MotorDriver::new(Channel::Pwm1);
+
+    servo.set_angle(85f64);
+    std::thread::sleep(Duration::from_millis(1000));
+    servo.set_angle(0f64);
+    std::thread::sleep(Duration::from_millis(1000));
+}
+
+#[tokio::main]
+async fn main() {
+    let route = warp::any()
+        .map(|| {
+            tokio::spawn(handler());
+            "Yay!"
+        });
+
+    warp::serve(route)
+        .run(([0,0,0,0], 7878))
+        .await;
+}
 
 const MIN_PULSE_WIDTH: f64 = 1f64;
 const MAX_PULSE_WIDTH: f64 = 2f64;
